@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" type="text/javascript"></script>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark text-light text-center">
+        <h2>Spring Boot RESTful Web Servis ve JQuery</h2>
+    </nav>
+    <div class="d-flex align-self-center justify-content-center">
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div id="save">
+                    <h3 class="text-center">Kişi Ekle</h3>
+                    <form id="formPerson">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">Ad Soyad</span>
+                            </div>
+                            <input id="name" type="text" class="form-control" placeholder="Ad Soyad Giriniz.." aria-label="name" aria-describedby="basic-addon1">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon2">Email</span>
+                            </div>
+                            <input id="email" type="text" class="form-control" placeholder="Email Giriniz.." aria-label="email" aria-describedby="basic-addon1">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon3">Tel. No</span>
+                            </div>
+                            <input id="phone" type="text" class="form-control" placeholder="Telefon No Giriniz.." aria-label="phone" aria-describedby="basic-addon1">
+                        </div>
+                        <button type="button" id="savePerson" class="btn btn-success">Kaydet</button>
+                    </form>
+                </div>
+                <div id="update" hidden="hidden">
+                    <h3 class="text-center">Kişiyi Güncelle</h3>
+                    <form id="updateForm">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon4">Ad Soyad</span>
+                            </div>
+                            <input id="uname" type="text" class="form-control" placeholder="Ad Soyad Giriniz.." aria-label="name" aria-describedby="basic-addon4">
+
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon5">Email</span>
+                            </div>
+                            <input id="uemail" type="text" class="form-control" placeholder="Email Giriniz.." aria-label="email" aria-describedby="basic-addon5">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon6">Tel. No</span>
+                            </div>
+                            <input id="uphone" type="text" class="form-control" placeholder="Telefon No Giriniz.." aria-label="phone" aria-describedby="basic-addon6">
+                        </div>
+                        <button type="button" id="cancelForm" class="btn btn-secondary">Vazgeç</button>
+                        <button type="button" id="updatePerson" class="btn btn-warning">Güncelle</button>
+                    </form>
+                </div>
+            </div>
+            <div id="list" class="col-md-8">
+                <div class="table-wrapper">
+                    <div class="table-title">
+                        <h3 class="text-center">Kişiler</h3>
+                    </div>
+                    <table class="table table-bordered table-stripped">
+                        <thead class="thead-dark text-center">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Ad-Soyad</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Telefon</th>
+                            <th scope="col">Düzenle</th>
+                            <th scope="col">Sil</th>
+                        </tr>
+                        </thead>
+                        <tbody id="personList">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function () {
+            retreivePersons();
+            $('table').on('click', 'button[id="deletePerson"]', function(e){
+                var id = $(this).closest('tr').children('td:first').text();
+                $.ajax({
+                    type:"DELETE",
+                    url:"http://localhost:8080/persons/" + id,
+                    success: function(){
+                        retreivePersons();
+                    },
+                    error: function(err) {
+                        var obj = JSON.parse(err.responseText);
+                        alert(obj.details[0]);
+                    }
+                });
+
+            });
+            $('table').on('click', 'button[id="editPerson"]', function(e){
+                var id,name,email,phone;
+                id = $(this).closest('tr').children('td:first').text();
+                name = $(this).closest('tr').children('td:nth-child(2)').text();
+                email = $(this).closest('tr').children('td:nth-child(3)').text();
+                phone = $(this).closest('tr').children('td:nth-child(4)').text();
+                $("#uname").val(name);
+                $("#uemail").val(email);
+                $("#uphone").val(phone);
+                $("#update").removeAttr('hidden');
+                $("#save").hide();
+                $("#updatePerson").one('click', function() {
+                    var jsonVar = {
+                        name: $("#uname").val(),
+                        email: $("#uemail").val(),
+                        phone: $("#uphone").val()
+                    };
+                    $.ajax({
+                            type: "PUT",
+                            data: JSON.stringify(jsonVar),
+                            contentType: "application/json",
+                            url: "http://localhost:8080/persons/" + id,
+                            success: function (data) {
+                                $("#uname").val("");
+                                $("#uemail").val("");
+                                $("#uphone").val("");
+                                $("#update").attr('hidden','hidden');
+                                $("#save").show();
+                                retreivePersons();
+                            }, error: function (err) {
+                                var obj = JSON.parse(err.responseText);
+                                alert(obj.details[0]);
+                                $("#uname").empty(); id="";
+                                $("#uemail").empty(); name="";
+                                $("#uphone").empty(); email="";
+                                $("#update").attr('hidden','hidden'); phone = "";
+                                $("#save").show();
+                            }
+                        });
+                });
+                $("#cancelForm").click(function () {
+                    $("#uname").empty(); id="";
+                    $("#uemail").empty(); name="";
+                    $("#uphone").empty(); email="";
+                    $("#update").attr('hidden','hidden'); phone = "";
+                    $("#save").show();
+                });
+            });
+            $("#savePerson").click(function (){
+                var JSONdata = {
+                    name: $('#name').val(),
+                    email: $('#email').val(),
+                    phone: $('#phone').val()
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/persons",
+                    data:JSON.stringify(JSONdata),
+                    contentType: "application/json",
+                    success:function (){
+                        retreivePersons();
+                        $('#name').val("");
+                        $('#email').val("");
+                        $('#phone').val("");
+                    },
+                    error:function (err){
+                        alert(err.details[0]);
+                    }
+                });
+            });
+            function retreivePersons(){
+                $("#personList").empty();
+                $.get("/persons",null,DataBind);
+                function DataBind(persons){
+                    var setData = $("#personList");
+                    for (var i=0;i<persons.length;i++){
+                        var data = "<tr>" +
+                            "<td>"+persons[i].id+"</td>" +
+                            "<td>"+persons[i].name+"</td>" +
+                            "<td>"+persons[i].email+"</td>" +
+                            "<td>"+persons[i].phone+"</td>" +
+                            "<td>"+"<button class='btn btn-info' id='editPerson'>Düzenle</button>"+"</td>"+
+                            "<td>"+"<button class='btn btn-danger' id='deletePerson'>Sil</button>"+"</td>"+
+                            "</tr>";
+                        setData.append(data);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
