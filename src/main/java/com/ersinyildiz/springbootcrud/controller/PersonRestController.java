@@ -7,6 +7,7 @@ import com.ersinyildiz.springbootcrud.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,23 +30,20 @@ public class PersonRestController {
 
     @GetMapping("/persons/{id}")
     public Person retrievePerson(@PathVariable("id") long id) {
-        return personService.findById(id).orElseThrow((PersonNotFoundException::new));
+        return personService.findById(id).orElseThrow(() -> new PersonNotFoundException("Kayit bulunamadi id:"+id));
     }
 
     @PostMapping("/persons")
     public Person createPerson(@Valid @RequestBody Person person, BindingResult bindingResult) {
         if (bindingResult.hasErrors()){
-            throw new PersonNotValidException();
+            throw new PersonNotValidException("Lütfen alanları eksiksiz doldurunuz..");
         }
         return personService.save(person);
     }
 
     @PutMapping("/persons/{id}")
-    public ResponseEntity<?> updatePerson(@Valid @RequestBody Person person, @PathVariable("id") long id, BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
-            throw new PersonNotValidException();
-        }
-        Person person1 = personService.findById(id).orElseThrow((PersonNotFoundException::new));
+    public ResponseEntity<?> updatePerson(@Valid @RequestBody Person person, @PathVariable("id") long id) throws MethodArgumentNotValidException {
+        Person person1 = personService.findById(id).orElseThrow(() -> new PersonNotFoundException("Kayit bulunamadi id:"+id));
         person1.setName(person.getName());
         person1.setEmail(person.getEmail());
         person1.setPhone(person.getPhone());
@@ -55,7 +53,7 @@ public class PersonRestController {
 
     @DeleteMapping("/persons/{id}")
     public ResponseEntity<?> deletePerson(@PathVariable("id") long id) {
-        personService.findById(id).orElseThrow((PersonNotFoundException::new));
+        personService.findById(id).orElseThrow(() -> new PersonNotFoundException("Kayit bulunamadi id:"+id));
         personService.deleteById(id);
         return ResponseEntity.ok().build();
     }

@@ -173,7 +173,8 @@
                         $('#phone').val("");
                     },
                     error:function (err){
-                        alert(err.details[0]);
+                        var obj = JSON.parse(err.responseText);
+                        alert(obj.details[0]);
                     }
                 });
             });

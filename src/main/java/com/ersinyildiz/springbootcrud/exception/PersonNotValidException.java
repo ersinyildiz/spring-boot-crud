@@ -5,11 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class PersonNotValidException extends RuntimeException{
+public class PersonNotValidException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public PersonNotValidException(){
-        super();
+    public PersonNotValidException(String message){
+        super(message);
     }
 }
