@@ -42,7 +42,7 @@ public class PersonRestController {
     }
 
     @PutMapping("/persons/{id}")
-    public ResponseEntity<?> updatePerson(@Valid @RequestBody Person person, @PathVariable("id") long id) throws MethodArgumentNotValidException {
+    public ResponseEntity<?> updatePerson(@Valid @RequestBody Person person, @PathVariable("id") long id) {
         Person person1 = personService.findById(id).orElseThrow(() -> new PersonNotFoundException("Kayit bulunamadi id:"+id));
         person1.setName(person.getName());
         person1.setEmail(person.getEmail());
