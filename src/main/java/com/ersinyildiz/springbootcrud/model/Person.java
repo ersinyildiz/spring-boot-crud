@@ -13,15 +13,15 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @Builder //Used In DefaultDataLoader.java
 @Entity
-public class Person {
+public class Person{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Size(max = 30, min = 3, message = "Lütfen isim soyisim giriniz..")
+    @Size(max = 30, min = 3, message = "Lütfen geçerli bir ad-soyad giriniz..")
     private String name;
     @Email(message = "Lütfen geçerli bir eposta adresi giriniz..")
     @Length(min = 5, max = 200,message = "Email uzunluğu 5 ile 200 karakter arası olmalıdır..")
     private String email;
-    @Size(min = 11, max = 11,message = "Lütfen geçerli bir numara giriniz..")
+    @Size(min = 11, max = 11,message = "Lütfen geçerli bir tel. no giriniz..")
     private String phone;
 }
