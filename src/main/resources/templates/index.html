@@ -2,106 +2,130 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Test</title>
+    <title>Spring Boot CRUD</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" type="text/javascript"></script>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark text-light text-center">
-        <h2>Spring Boot MVC & Thymeleaf</h2>
-    </nav>
-    <div class="d-flex align-self-center justify-content-center">
-        <div class="row mt-4">
-            <div class="col-md-4">
-                <div id="save" th:switch="${personDetails}">
-                    <div th:case="null">
-                        <h3 class="text-center">Kişi Ekle</h3>
-                        <form action="#" th:action="@{/addPerson}" th:object="${person}" method="post" style="width: 300px;">
-                            <div class="input-group mb-3">
-                                <input type="text" th:field="*{name}" class="form-control d-block" placeholder="Ad Soyad Giriniz.." required>
-                                <div class="invalid-feedback d-block">
-                                    <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
-                                </div>
+<nav class="navbar navbar-dark bg-dark text-light text-center">
+    <h2>Spring Boot MVC & Thymeleaf</h2>
+</nav>
+<div class="d-flex align-self-center justify-content-center">
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div id="save" th:switch="${personDetails}">
+                <div th:case="null">
+                    <h2 class="text-center mb-3 mt-3 text-secondary">Kişi Ekle</h2>
+                    <form action="#" th:action="@{/addPerson}" th:object="${person}" method="post" style="width: 300px;">
+                        <div class="input-group mb-3">
+                            <input type="text" th:field="*{name}" class="form-control d-block" placeholder="Ad Soyad Giriniz.." required>
+                            <div class="invalid-feedback d-block">
+                                <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
                             </div>
-                            <div class="input-group mb-3">
-                                <input type="text" th:field="*{email}"  class="form-control d-block" placeholder="Email Giriniz.." required>
-                                <div class="invalid-feedback d-block">
-                                    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
-                                </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="text" th:field="*{email}"  class="form-control d-block" placeholder="Email Giriniz.." required>
+                            <div class="invalid-feedback d-block">
+                                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
                             </div>
-                            <div class="input-group mb-3" >
-                                <input type="text" th:field="*{phone}"  class="form-control d-block" placeholder="Telefon No Giriniz.." required>
-                                <div class="invalid-feedback d-block">
-                                    <span th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
-                                </div>
+                        </div>
+                        <div class="input-group mb-3" >
+                            <input type="text" th:field="*{phone}"  class="form-control d-block" placeholder="Telefon No Giriniz.." required>
+                            <div class="invalid-feedback d-block">
+                                <span th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
                             </div>
-                            <button type="submit" class="btn btn-success">Kaydet</button>
-                        </form>
-                    </div>
-                </div>
-                <div id="update" th:switch="${personDetails}">
-                    <div th:case="null"></div>
-                    <div th:case="*">
-                        <h3 class="text-center">Kişi Güncelle</h3>
-                        <form action="#" th:action="@{/persons/{id}(id=${personDetails.id})}" th:object="${person}" method="post" id="updateForm" style="width: 300px;">
-                            <div class="input-group mb-3">
-                                <input type="text" id="name" name="name" th:value="${personDetails.name}"  class="form-control d-block" placeholder="Ad Soyad Giriniz.." required>
-                                <div class="invalid-feedback d-block">
-                                    <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
-                                </div>
-                            </div>
-                            <div class="input-group mb-3">
-                                <input type="text" id="email" name="email" th:value="${personDetails.email}" class="form-control d-block" placeholder="Email Giriniz.." required>
-                                <div class="invalid-feedback d-block">
-                                    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
-                                </div>
-                            </div>
-                            <div class="input-group mb-3" >
-                                <input type="text" id="phone" name="phone" th:value="${personDetails.phone}" class="form-control d-block" placeholder="Telefon No Giriniz.." required>
-                                <div class="invalid-feedback d-block">
-                                    <span th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
-                                </div>
-                            </div>
-
-                            <a href="/" type="reset" class="btn btn-secondary">Vazgeç</a>
-                            <button type="submit" class="btn btn-success">Güncelle</button>
-                        </form>
-                    </div>
+                        </div>
+                        <button type="submit" class="btn btn-success">Kaydet</button>
+                    </form>
                 </div>
             </div>
-            <div id="list" th:switch="${personList}" class="col-md-8">
-                <h2 th:case="null">Kişi bulunamadı!</h2>
-                <div th:case="*" class="table-wrapper">
-                    <div class="table-title">
-                        <h3 class="text-center">Kişiler</h3>
-                    </div>
+            <div id="update" th:switch="${personDetails}">
+                <div th:case="null"></div>
+                <div th:case="*">
+                    <h2 class="text-center mb-3 mt-3 text-secondary">Kişi Güncelle</h2>
+                    <form action="#" th:action="@{/persons/{id}(id=${personDetails.id})}" th:object="${person}" method="post" id="updateForm" style="width: 300px;">
+                        <div class="input-group mb-3">
+                            <input type="text" id="name" name="name" th:value="${personDetails.name}"  class="form-control d-block" placeholder="Ad Soyad Giriniz.." required>
+                            <div class="invalid-feedback d-block">
+                                <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="text" id="email" name="email" th:value="${personDetails.email}" class="form-control d-block" placeholder="Email Giriniz.." required>
+                            <div class="invalid-feedback d-block">
+                                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3" >
+                            <input type="text" id="phone" name="phone" th:value="${personDetails.phone}" class="form-control d-block" placeholder="Telefon No Giriniz.." required>
+                            <div class="invalid-feedback d-block">
+                                <span th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
+                            </div>
+                        </div>
 
-                    <table class="table table-bordered table-stripped">
-                        <thead class="thead-dark text-center">
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Ad-Soyad</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Telefon</th>
-                            <th scope="col">Düzenle</th>
-                            <th scope="col">Sil</th>
-                        </tr>
-                        </thead>
-                        <tbody id="personList">
-                            <tr th:each="person : ${personList}">
-                                <td th:text="${person.id}"></td>
-                                <td th:text="${person.name}"></td>
-                                <td th:text="${person.email}"></td>
-                                <td th:text="${person.phone}"></td>
-                                <td><a th:href="@{/persons/{id}(id=${person.id})}" class='btn btn-info' id='editPerson'>Düzenle</a></td>
-                                <td><a th:href="@{/deletePerson/{id}(id=${person.id})}" class='btn btn-danger' id='deletePerson'>Sil</a></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                        <a href="/" type="reset" class="btn btn-secondary">Vazgeç</a>
+                        <button type="submit" class="btn btn-success">Güncelle</button>
+                    </form>
                 </div>
             </div>
         </div>
+        <div id="list" th:switch="${personList}" class="col-md-8">
+            <h2 th:case="null">Kişi bulunamadı!</h2>
+            <div th:case="*" class="table-wrapper">
+                <div class="table-title">
+                </div>
+                <table class="table table-bordered table-stripped">
+                    <caption style="caption-side: top"><h2 class="text-center">Kişiler</h2></caption>
+                    <thead class="thead-dark text-center">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Ad-Soyad</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Telefon</th>
+                        <th scope="col">Düzenle</th>
+                        <th scope="col">Sil</th>
+                    </tr>
+                    </thead>
+                    <tbody id="personList">
+                    <tr th:each="person : ${personList}">
+                        <td th:text="${person.id}"></td>
+                        <td th:text="${person.name}"></td>
+                        <td th:text="${person.email}"></td>
+                        <td th:text="${person.phone}"></td>
+                        <td><a th:href="@{/persons/{id}(id=${person.id})}" class='btn btn-info editPerson'>Düzenle</a></td>
+                        <td><button class='btn btn-danger deleteButton'>Sil</button></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+</div>
+<script>
+    $(document).ready(function (){
+        if ($('#update #name').val() != null)
+            disableDeleteButtons();
+    });
+    $('.deleteButton').click(function () {
+        var id = $(this).closest('tr').children('td:first').text();
+        var element = $(this);
+        $.ajax({
+            type: "DELETE",
+            url: "http://localhost:8080/api/persons/" + id,
+            success: function () {
+                element.closest("tr").remove();
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    });
+    function disableDeleteButtons(){
+        $('.deleteButton').prop('disabled',true);
+    }
+
+</script>
 </body>
 </html>
+

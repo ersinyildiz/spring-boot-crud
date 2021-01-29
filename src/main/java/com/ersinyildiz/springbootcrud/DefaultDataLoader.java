@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultDataLoader implements ApplicationRunner {
 
+    private static final String PHONE_NUMBER = "01234567890";
+
     private PersonService personService;
 
     @Autowired
@@ -22,17 +24,17 @@ public class DefaultDataLoader implements ApplicationRunner {
         Person p1 = Person.builder()
                 .name("Ersin YILDIZ")
                 .email("ersinyildiz@gmail.com")
-                .phone("01234567890")
+                .phone(PHONE_NUMBER)
                 .build();
         Person p2 = Person.builder()
                 .name("Mehmet KARACA")
                 .email("mehmetkaraca@gmail.com")
-                .phone("01234567890")
+                .phone(PHONE_NUMBER)
                 .build();
         Person p3 = Person.builder()
                 .name("Murat CAN")
                 .email("muratcan@gmail.com")
-                .phone("01234567890")
+                .phone(PHONE_NUMBER)
                 .build();
         personService.save(p1);
         personService.save(p2);
