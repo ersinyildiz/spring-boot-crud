@@ -1,7 +1,9 @@
 package com.ersinyildiz.springbootcrud.controller;
 
+import com.ersinyildiz.springbootcrud.dto.PersonDTO;
 import com.ersinyildiz.springbootcrud.exception.PersonNotFoundException;
 import com.ersinyildiz.springbootcrud.exception.PersonNotValidException;
+import com.ersinyildiz.springbootcrud.mapper.PersonMapper;
 import com.ersinyildiz.springbootcrud.model.Person;
 import com.ersinyildiz.springbootcrud.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +22,18 @@ public class PersonRestController {
     private static final String RECORD_NOT_FOUND = "Kayıt bulunamadı id:";
 
     private PersonService personService;
+    private PersonMapper personMapper;
+
 
     @Autowired
-    public void setPersonService(PersonService personService) {
+    public void setPersonService(PersonService personService,PersonMapper personMapper) {
         this.personService = personService;
+        this.personMapper = personMapper;
     }
 
     @GetMapping("/persons")
-    public List<Person> retrieveAllPersons() {
-        return personService.findAll();
+    public List<PersonDTO> retrieveAllPersons() {
+        return personMapper.toPersonDTOs(personService.findAll());
     }
 
     @GetMapping("/persons/{id}")
@@ -37,23 +42,21 @@ public class PersonRestController {
     }
 
     @PostMapping("/persons")
-    public Person createPerson(@Valid @RequestBody Person person, BindingResult bindingResult) {
+    public Person createPerson(@Valid @RequestBody PersonDTO personDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()){
             throw new PersonNotValidException("Lütfen alanları eksiksiz doldurunuz..");
         }
-        return personService.save(person);
+        return personService.save(personMapper.toPerson(personDTO));
     }
 
     @PutMapping("/persons/{id}")
-    public ResponseEntity<Object> updatePerson(@Valid @RequestBody Person person, BindingResult bindingResult,@PathVariable("id")Long id) {
+    public ResponseEntity<Object> updatePerson(@Valid @RequestBody PersonDTO personDTO, BindingResult bindingResult,@PathVariable("id")Long id) {
         if (bindingResult.hasErrors()){
             return ResponseEntity.badRequest().build();
         }
-        Person person1 = personService.findById(id).orElseThrow(() -> new PersonNotFoundException(RECORD_NOT_FOUND+id));
-        person1.setName(person.getName());
-        person1.setEmail(person.getEmail());
-        person1.setPhone(person.getPhone());
-        personService.save(person1);
+        Person person = personMapper.toPerson(personDTO);
+        person.setId(id);
+        personService.save(person);
         return ResponseEntity.ok().build();
     }
 

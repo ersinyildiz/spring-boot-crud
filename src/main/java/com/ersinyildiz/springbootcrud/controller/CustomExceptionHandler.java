@@ -27,7 +27,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity<Object> handleNotFoundException(PersonNotFoundException ex) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
-        ErrorResponse error = new ErrorResponse(NOT_FOUND, details);
+        ErrorResponse error = new ErrorResponse(NOT_FOUND,details);
         return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(PersonNotValidException.class)

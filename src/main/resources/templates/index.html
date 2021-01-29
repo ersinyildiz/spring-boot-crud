@@ -17,7 +17,7 @@
             <div id="save" th:switch="${personDetails}">
                 <div th:case="null">
                     <h2 class="text-center mb-3 mt-3 text-secondary">Kişi Ekle</h2>
-                    <form action="#" th:action="@{/addPerson}" th:object="${person}" method="post" style="width: 300px;">
+                    <form action="#" th:action="@{/addPerson}" th:object="${personDTO}" method="post" style="width: 300px;">
                         <div class="input-group mb-3">
                             <input type="text" th:field="*{name}" class="form-control d-block" placeholder="Ad Soyad Giriniz.." required>
                             <div class="invalid-feedback d-block">
@@ -44,7 +44,7 @@
                 <div th:case="null"></div>
                 <div th:case="*">
                     <h2 class="text-center mb-3 mt-3 text-secondary">Kişi Güncelle</h2>
-                    <form action="#" th:action="@{/persons/{id}(id=${personDetails.id})}" th:object="${person}" method="post" id="updateForm" style="width: 300px;">
+                    <form action="#" th:action="@{/persons/{id}(id=${personDetails.id})}" th:object="${personDTO}" method="post" id="updateForm" style="width: 300px;">
                         <div class="input-group mb-3">
                             <input type="text" id="name" name="name" th:value="${personDetails.name}"  class="form-control d-block" placeholder="Ad Soyad Giriniz.." required>
                             <div class="invalid-feedback d-block">

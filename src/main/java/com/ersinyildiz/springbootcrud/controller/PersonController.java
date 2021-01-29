@@ -1,6 +1,8 @@
 package com.ersinyildiz.springbootcrud.controller;
 
+import com.ersinyildiz.springbootcrud.dto.PersonDTO;
 import com.ersinyildiz.springbootcrud.exception.PersonNotFoundException;
+import com.ersinyildiz.springbootcrud.mapper.PersonMapper;
 import com.ersinyildiz.springbootcrud.model.Person;
 import com.ersinyildiz.springbootcrud.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,61 +23,62 @@ public class PersonController {
     private static final String RECORD_NOT_FOUND = "Kayıt bulunamadı id:";
 
     private PersonService personService;
+    private PersonMapper personMapper;
 
     @Autowired
-    public void setPersonService(PersonService personService) {
+    public void setPersonService(PersonService personService,PersonMapper personMapper) {
         this.personService = personService;
+        this.personMapper = personMapper;
     }
 
     @GetMapping("/")
     public String index(Model model){
-        model.addAttribute(PERSON_LIST,personService.findAll());
+        model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
         return INDEX;
     }
 
     @GetMapping("/persons/{id}")
-    public String retreivePerson(@PathVariable("id") Long id, Model model){
+    public String retrievePerson(@PathVariable("id") Long id, Model model)  {
         Optional<Person> person = personService.findById(id);
         if (!person.isPresent()){
             throw new PersonNotFoundException(RECORD_NOT_FOUND+id);
         }
-        model.addAttribute(PERSON_LIST,personService.findAll());
+        model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
         model.addAttribute("personDetails",person.get());
         return INDEX;
     }
 
     @ModelAttribute
-    public Person initModel(){
-        return new Person();
+    public PersonDTO initModel(){
+        return new PersonDTO();
     }
 
     @PostMapping("/addPerson")
-    public String createPerson(@Valid @ModelAttribute Person person, BindingResult bindingResult, Model model){
+    public String createPerson(@Valid @ModelAttribute PersonDTO personDTO, BindingResult bindingResult, Model model){
         if (bindingResult.hasErrors()){
-            model.addAttribute(PERSON_LIST,personService.findAll());
+            model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
             return INDEX;
         }
-        personService.save(person);
-        model.addAttribute(PERSON_LIST,personService.findAll());
+        personService.save(personMapper.toPerson(personDTO));
+        model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
         return REDIRECT;
     }
 
     @PostMapping("/persons/{id}")
-    public String updatePerson(@Valid @ModelAttribute Person person, BindingResult bindingResult, @PathVariable("id") Long id, Model model) {
-        Optional<Person> person1 = personService.findById(id);
-        if (!person1.isPresent()){
+    public String updatePerson(@Valid @ModelAttribute PersonDTO personDTO, BindingResult bindingResult, @PathVariable("id") Long id, Model model) {
+        Optional<Person> optionalPerson = personService.findById(id);
+        if (!optionalPerson.isPresent()){
             throw new PersonNotFoundException(RECORD_NOT_FOUND+id);
         }
         if (bindingResult.hasErrors()){
-            model.addAttribute("personDetails",person1.get());
-            model.addAttribute(PERSON_LIST,personService.findAll());
+            model.addAttribute("personDetails",optionalPerson.get());
+            model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
             return INDEX;
         }
-        person1.get().setName(person.getName());
-        person1.get().setEmail(person.getEmail());
-        person1.get().setPhone(person.getPhone());
-        personService.save(person1.get());
-        model.addAttribute(PERSON_LIST,personService.findAll());
+        Person person = personMapper.toPerson(personDTO);
+        person.setId(id);
+        personService.save(person);
+        model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
         return REDIRECT;
     }
 
@@ -86,7 +89,7 @@ public class PersonController {
             throw new PersonNotFoundException(RECORD_NOT_FOUND+id);
         }
         personService.deleteById(id);
-        model.addAttribute(PERSON_LIST,personService.findAll());
+        model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
         return REDIRECT;
     }
 }
