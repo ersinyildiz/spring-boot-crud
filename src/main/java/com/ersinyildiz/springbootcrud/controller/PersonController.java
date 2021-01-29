@@ -39,12 +39,12 @@ public class PersonController {
 
     @GetMapping("/persons/{id}")
     public String retrievePerson(@PathVariable("id") Long id, Model model)  {
-        Optional<Person> person = personService.findById(id);
-        if (!person.isPresent()){
+        Optional<Person> optionalPerson = personService.findById(id);
+        if (!optionalPerson.isPresent()){
             throw new PersonNotFoundException(RECORD_NOT_FOUND+id);
         }
         model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
-        model.addAttribute("personDetails",person.get());
+        model.addAttribute("personDetails",personMapper.toPersonDTO(optionalPerson.get()));
         return INDEX;
     }
 
@@ -71,7 +71,7 @@ public class PersonController {
             throw new PersonNotFoundException(RECORD_NOT_FOUND+id);
         }
         if (bindingResult.hasErrors()){
-            model.addAttribute("personDetails",optionalPerson.get());
+            model.addAttribute("personDetails",personMapper.toPersonDTO(optionalPerson.get()));
             model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
             return INDEX;
         }
