@@ -1,50 +1,35 @@
 package com.ersinyildiz.springbootcrud.controller;
 
 import com.ersinyildiz.springbootcrud.dto.PersonDTO;
-import com.ersinyildiz.springbootcrud.exception.PersonNotFoundException;
-import com.ersinyildiz.springbootcrud.mapper.PersonMapper;
-import com.ersinyildiz.springbootcrud.model.Person;
-import com.ersinyildiz.springbootcrud.service.PersonService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ersinyildiz.springbootcrud.util.CrudOperations;
+import lombok.Generated;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
+@Generated //Ignore for test
 @Controller
-public class PersonController {
+public class PersonController extends CrudOperations {
 
     private static final String PERSON_LIST = "personList";
+    private static final String PERSON_DETAILS = "personDetails";
     private static final String INDEX = "index";
     private static final String REDIRECT = "redirect:/";
-    private static final String RECORD_NOT_FOUND = "Kayıt bulunamadı id:";
 
-    private PersonService personService;
-    private PersonMapper personMapper;
-
-    @Autowired
-    public void setPersonService(PersonService personService,PersonMapper personMapper) {
-        this.personService = personService;
-        this.personMapper = personMapper;
-    }
 
     @GetMapping("/")
     public String index(Model model){
-        model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
+        model.addAttribute(PERSON_LIST,getAll());
         return INDEX;
     }
 
     @GetMapping("/persons/{id}")
     public String retrievePerson(@PathVariable("id") Long id, Model model)  {
-        Optional<Person> optionalPerson = personService.findById(id);
-        if (!optionalPerson.isPresent()){
-            throw new PersonNotFoundException(RECORD_NOT_FOUND+id);
-        }
-        model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
-        model.addAttribute("personDetails",personMapper.toPersonDTO(optionalPerson.get()));
+        model.addAttribute(PERSON_DETAILS,get(id));
+        model.addAttribute(PERSON_LIST,getAll());
         return INDEX;
     }
 
@@ -56,40 +41,27 @@ public class PersonController {
     @PostMapping("/addPerson")
     public String createPerson(@Valid @ModelAttribute PersonDTO personDTO, BindingResult bindingResult, Model model){
         if (bindingResult.hasErrors()){
-            model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
+            model.addAttribute(PERSON_LIST,getAll());
             return INDEX;
         }
-        personService.save(personMapper.toPerson(personDTO));
-        model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
+        save(personDTO);
         return REDIRECT;
     }
 
     @PostMapping("/persons/{id}")
     public String updatePerson(@Valid @ModelAttribute PersonDTO personDTO, BindingResult bindingResult, @PathVariable("id") Long id, Model model) {
-        Optional<Person> optionalPerson = personService.findById(id);
-        if (!optionalPerson.isPresent()){
-            throw new PersonNotFoundException(RECORD_NOT_FOUND+id);
-        }
         if (bindingResult.hasErrors()){
-            model.addAttribute("personDetails",personMapper.toPersonDTO(optionalPerson.get()));
-            model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
+            model.addAttribute(PERSON_DETAILS,get(id));
+            model.addAttribute(PERSON_LIST,getAll());
             return INDEX;
         }
-        Person person = personMapper.toPerson(personDTO);
-        person.setId(id);
-        personService.save(person);
-        model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
+        update(personDTO,id);
         return REDIRECT;
     }
 
     @GetMapping("/deletePerson/{id}")
-    public String deletePerson(@PathVariable("id") long id, Model model) {
-        Optional<Person> person1 = personService.findById(id);
-        if (!person1.isPresent()){
-            throw new PersonNotFoundException(RECORD_NOT_FOUND+id);
-        }
-        personService.deleteById(id);
-        model.addAttribute(PERSON_LIST,personMapper.toPersonDTOs(personService.findAll()));
+    public String deletePerson(@PathVariable("id") long id) {
+        delete(id);
         return REDIRECT;
     }
 }

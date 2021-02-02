@@ -3,6 +3,7 @@ package com.ersinyildiz.springbootcrud.controller;
 import com.ersinyildiz.springbootcrud.exception.PersonNotFoundException;
 import com.ersinyildiz.springbootcrud.exception.PersonNotValidException;
 import com.ersinyildiz.springbootcrud.model.ErrorResponse;
+import lombok.Generated;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Generated //Ignore for test
 @ControllerAdvice
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
