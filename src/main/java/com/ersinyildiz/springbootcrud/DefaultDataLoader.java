@@ -27,8 +27,8 @@ public class DefaultDataLoader implements ApplicationRunner {
                 .phone(PHONE_NUMBER)
                 .build();
         Person p2 = Person.builder()
-                .name("Mehmet KARACA")
-                .email("mehmetkaraca@gmail.com")
+                .name("Ali KARA")
+                .email("alikara@gmail.com")
                 .phone(PHONE_NUMBER)
                 .build();
         Person p3 = Person.builder()

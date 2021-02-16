@@ -93,8 +93,8 @@
                         <td th:text="${person.name}"></td>
                         <td th:text="${person.email}"></td>
                         <td th:text="${person.phone}"></td>
-                        <td><a th:href="@{/persons/{id}(id=${person.id})}" class='btn btn-info editPerson'>Düzenle</a></td>
-                        <td><button class='btn btn-danger deleteButton'>Sil</button></td>
+                        <td><a th:href="@{/persons/{id}(id=${person.id})}" class="btn btn-info">Düzenle</a></td>
+                        <td><a th:href="@{/deletePerson/{id}(id=${person.id})}" class="btn btn-danger">Sil</a></td>
                     </tr>
                     </tbody>
                 </table>
@@ -102,30 +102,6 @@
         </div>
     </div>
 </div>
-<script>
-    $(document).ready(function (){
-        if ($('#update #name').val() != null)
-            disableDeleteButtons();
-    });
-    $('.deleteButton').click(function () {
-        var id = $(this).closest('tr').children('td:first').text();
-        var element = $(this);
-        $.ajax({
-            type: "DELETE",
-            url: "http://localhost:8080/api/persons/" + id,
-            success: function () {
-                element.closest("tr").remove();
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
-    });
-    function disableDeleteButtons(){
-        $('.deleteButton').prop('disabled',true);
-    }
-
-</script>
 </body>
 </html>
 

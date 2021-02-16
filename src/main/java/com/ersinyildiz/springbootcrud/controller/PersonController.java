@@ -2,7 +2,6 @@ package com.ersinyildiz.springbootcrud.controller;
 
 import com.ersinyildiz.springbootcrud.dto.PersonDTO;
 import com.ersinyildiz.springbootcrud.util.CrudOperations;
-import lombok.Generated;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@Generated //Ignore for test
 @Controller
 public class PersonController extends CrudOperations {
 
